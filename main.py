@@ -1286,16 +1286,22 @@ def find_channels():
 if __name__ == '__main__':
     import threading
 
-    bot_thread = threading.Thread(target=start_bot, daemon=True)
-    bot_thread.start()
+    port = int(os.environ.get("PORT", 5000))
 
-    time.sleep(10)
+    def start_bots_delayed():
+        time.sleep(5)
+        bot_thread = threading.Thread(target=start_bot, daemon=True)
+        bot_thread.start()
 
-    stickied_bot_thread = threading.Thread(target=start_stickied_bot, daemon=True)
-    stickied_bot_thread.start()
+        time.sleep(10)
+
+        stickied_bot_thread = threading.Thread(target=start_stickied_bot, daemon=True)
+        stickied_bot_thread.start()
+
+    bots_thread = threading.Thread(target=start_bots_delayed, daemon=True)
+    bots_thread.start()
 
     ping_thread = threading.Thread(target=server_pinger, daemon=True)
     ping_thread.start()
 
-    port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
